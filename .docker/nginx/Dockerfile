@@ -1,4 +1,5 @@
-FROM nginx:latest
+ARG NGINX_VERSION
+FROM nginx:${NGINX_VERSION}
 
 ARG SERVICE_DIR="./nginx"
 COPY ./.shared/scripts/ /tmp/scripts/

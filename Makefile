@@ -1,7 +1,35 @@
+# see https://tech.davis-hansson.com/p/make/ 
+SHELL := bash
+.ONESHELL:
+# pipefail makes sure that a series of commands is treated 
+# as one command, i.e. if one fails, the whole series is marked as failed
+.SHELLFLAGS := -u -o pipefail -c
+MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules
+
 DOCKER_COMPOSE_DIR=./.docker
 DOCKER_COMPOSE_FILE=$(DOCKER_COMPOSE_DIR)/docker-compose.yml
 DEFAULT_CONTAINER=workspace
 DOCKER_COMPOSE=docker-compose -f $(DOCKER_COMPOSE_FILE) --project-directory $(DOCKER_COMPOSE_DIR)
+RUN_IN_DOCKER_USER=www-data
+RUN_IN_DOCKER_CONTAINER=workspace
+
+ifndef CONTAINER
+	CONTAINER :=
+endif
+
+ifndef NO_BUILDKIT
+	DOCKER_COMPOSE :=DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 $(DOCKER_COMPOSE)
+endif
+
+# if the file /.dockerenv does not exist we are NOT inside a docker container
+# so we must prefix any command to be executed inside the container
+ifeq ("$(wildcard /.dockerenv)","")
+	RUN_IN_DOCKER := $(DOCKER_COMPOSE) exec -T --user $(RUN_IN_DOCKER_USER) $(RUN_IN_DOCKER_CONTAINER)
+endif
+
+ifndef NO_BUILDKIT
+endif
 
 DEFAULT_GOAL := help
 help:
@@ -44,3 +72,17 @@ docker-up: docker-init ## Start all docker containers. To only start one contain
 .PHONY: docker-down
 docker-down: docker-init ## Stop all docker containers. To only stop one container, use CONTAINER=<service>
 	$(DOCKER_COMPOSE) down $(CONTAINER)
+
+.PHONY: docker-config
+docker-config: docker-init ## Show the docker-compose config with resolved .env values
+	$(DOCKER_COMPOSE) config
+
+##@ [Application] Setup
+
+.PHONY: composer
+composer: ## Run composer install
+	$(RUN_IN_DOCKER) composer $(COMPOSER_ARGS)
+
+.PHONY: composer-install
+composer-install: ## Run composer install
+	$(RUN_IN_DOCKER) composer install

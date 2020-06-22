@@ -83,14 +83,14 @@ function test_php_module(){
 service="workspace"
 service_info ${service}
 test_container_is_running ${service}
-test_php_version ${service} php 7.3
+test_php_version ${service} php 7.4
 test_php_modules ${service} php xdebug "Zend OPcache"
 test_host_docker_internal ${service}
 
 service="php-fpm"
 service_info ${service}
 test_container_is_running ${service}
-test_php_version ${service} php-fpm 7.3
+test_php_version ${service} php-fpm 7.4
 test_php_modules ${service} php-fpm xdebug "Zend OPcache"
 test_host_docker_internal ${service}
 
@@ -98,3 +98,11 @@ service="nginx"
 service_info ${service}
 test_container_is_running ${service}
 test_request_nginx 127.0.0.1 "Hello world"
+
+service="mysql"
+service_info ${service}
+test_container_is_running ${service}
+
+service="redis"
+service_info ${service}
+test_container_is_running ${service}

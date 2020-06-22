@@ -1,4 +1,4 @@
-ARG TARGET_PHP_VERSION=7.3
+ARG TARGET_PHP_VERSION
 FROM php:${TARGET_PHP_VERSION}-fpm
 
 ARG SERVICE_DIR="./php-fpm"
@@ -34,8 +34,14 @@ RUN /tmp/scripts/modify_config.sh /usr/local/etc/php-fpm.d/zz-app.conf \
     "${APP_GROUP}" \
 ;
 
+# Make sure the volumes have the correct ownership
+ARG APP_CACHE_PATH
+RUN mkdir -p "${APP_CACHE_PATH}" && chown ${APP_USER}: "${APP_CACHE_PATH}"
+ARG APP_LOG_PATH
+RUN mkdir -p "${APP_LOG_PATH}" && chown ${APP_USER}: "${APP_LOG_PATH}"
+
 # workdir
-ARG APP_CODE_PATH="/var/www/current"
+ARG APP_CODE_PATH
 WORKDIR "$APP_CODE_PATH"
 
 # entrypoint

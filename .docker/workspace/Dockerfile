@@ -1,4 +1,4 @@
-ARG TARGET_PHP_VERSION=7.3
+ARG TARGET_PHP_VERSION
 FROM php:${TARGET_PHP_VERSION}-cli
 
 ARG SERVICE_DIR="./workspace"
@@ -40,8 +40,20 @@ USER root
 # php config
 COPY ./.shared/config/php/conf.d/*  /usr/local/etc/php/conf.d/
 
+# install composer
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+USER ${APP_USER}
+RUN composer global require hirak/prestissimo
+USER root
+
+# Make sure the volumes have the correct ownership
+ARG APP_CACHE_PATH
+RUN mkdir -p "${APP_CACHE_PATH}" && chown ${APP_USER}: "${APP_CACHE_PATH}"
+ARG APP_LOG_PATH
+RUN mkdir -p "${APP_LOG_PATH}" && chown ${APP_USER}: "${APP_LOG_PATH}"
+
 # workdir
-ARG APP_CODE_PATH="/var/www/current"
+ARG APP_CODE_PATH
 WORKDIR "$APP_CODE_PATH"
 
 # entrypoint
