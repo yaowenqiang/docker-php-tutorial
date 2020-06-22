@@ -84,20 +84,27 @@ service="workspace"
 service_info ${service}
 test_container_is_running ${service}
 test_php_version ${service} php 7.4
-test_php_modules ${service} php xdebug "Zend OPcache"
+test_php_modules ${service} php xdebug "Zend OPcache" pdo_mysql redis
 test_host_docker_internal ${service}
 
 service="php-fpm"
 service_info ${service}
 test_container_is_running ${service}
 test_php_version ${service} php-fpm 7.4
-test_php_modules ${service} php-fpm xdebug "Zend OPcache"
+test_php_modules ${service} php-fpm xdebug "Zend OPcache" pdo_mysql redis
+test_host_docker_internal ${service}
+
+service="php-worker"
+service_info ${service}
+test_container_is_running ${service}
+test_php_version ${service} php 7.4
+test_php_modules ${service} php xdebug "Zend OPcache" pdo_mysql redis
 test_host_docker_internal ${service}
 
 service="nginx"
 service_info ${service}
 test_container_is_running ${service}
-test_request_nginx 127.0.0.1 "Hello world"
+test_request_nginx 127.0.0.1 "Laravel"
 
 service="mysql"
 service_info ${service}

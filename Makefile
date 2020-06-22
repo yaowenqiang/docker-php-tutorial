@@ -1,7 +1,7 @@
-# see https://tech.davis-hansson.com/p/make/ 
+# see https://tech.davis-hansson.com/p/make/
 SHELL := bash
 .ONESHELL:
-# pipefail makes sure that a series of commands is treated 
+# pipefail makes sure that a series of commands is treated
 # as one command, i.e. if one fails, the whole series is marked as failed
 .SHELLFLAGS := -u -o pipefail -c
 MAKEFLAGS += --warn-undefined-variables
@@ -24,6 +24,7 @@ endif
 
 # if the file /.dockerenv does not exist we are NOT inside a docker container
 # so we must prefix any command to be executed inside the container
+RUN_IN_DOCKER :=
 ifeq ("$(wildcard /.dockerenv)","")
 	RUN_IN_DOCKER := $(DOCKER_COMPOSE) exec -T --user $(RUN_IN_DOCKER_USER) $(RUN_IN_DOCKER_CONTAINER)
 endif
@@ -77,11 +78,15 @@ docker-down: docker-init ## Stop all docker containers. To only stop one contain
 docker-config: docker-init ## Show the docker-compose config with resolved .env values
 	$(DOCKER_COMPOSE) config
 
-##@ [Application] Setup
+##@ [Application]
 
 .PHONY: composer
-composer: ## Run composer install
-	$(RUN_IN_DOCKER) composer $(COMPOSER_ARGS)
+composer: ## Run composer and provide the command via ARGS="command --options"
+	$(RUN_IN_DOCKER) composer $(ARGS)
+
+.PHONY: artisan
+artisan: ## Run artisan and provide the command via ARGS="command --options"
+	$(RUN_IN_DOCKER) php artisan $(ARGS)
 
 .PHONY: composer-install
 composer-install: ## Run composer install

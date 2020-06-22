@@ -3,7 +3,7 @@ version: '3.7'
 networks:
   backend:
     driver: ${NETWORKS_DRIVER}
-    
+
 volumes:
   mysql:
     name: mysql
@@ -123,15 +123,13 @@ services:
         - MYSQL_VERSION=${MYSQL_VERSION}
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_USER=${MYSQL_USER}
       - TZ=${TIMEZONE}
     volumes:
       - mysql:/var/lib/mysql
     networks:
       - backend
-        
+
   redis:
     image: redis:${REDIS_VERSION}-alpine
     ports:
