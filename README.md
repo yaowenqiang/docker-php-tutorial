@@ -16,10 +16,12 @@ I recommend to clone the full repository and check out the corresponding branch 
 ````
 mkdir -p /c/codebase
 cd /c/codebase/
-git clone https://github.com/paslandau/docker-php-tutorial.git
+git clone https://github.com/yaowenqiang/docker-php-tutorial.git
 cd docker-php-tutorial
 
+git fetch origin
 git checkout part_2_setting-up-phpstorm-with-xdebug-for-local-development-on-docker
+
 ````
 
 ## Tutorials
